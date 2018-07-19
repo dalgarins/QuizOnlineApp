@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.renderscript.Sampler
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -39,7 +38,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun signIn(userName: String, password: String) {
+        users.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(databaseError: DatabaseError) {
 
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.child(userName).exists()) {
+                    if (!userName.isEmpty()) {
+                        val login: User? = dataSnapshot.child(userName).getValue(User::class.java)
+                        login!!.let {
+                            if (password == (it.password)) {
+                                Toast.makeText(this@MainActivity, "Login ok!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this@MainActivity, "Wrong password!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this@MainActivity, "Please enter the user name!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@MainActivity, "User does not exist!", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        })
     }
 
     private fun showSignUpDialog() {
