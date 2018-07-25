@@ -1,24 +1,21 @@
 package co.anbora.onlinequizapp
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
 import co.anbora.onlinequizapp.databinding.ActivityMainBinding
+import co.anbora.onlinequizapp.databinding.SignUpLayoutBinding
 import co.anbora.onlinequizapp.domain.model.User
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.sign_up_layout.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var mainBinding: ActivityMainBinding
+    private lateinit var mainBinding: ActivityMainBinding
 
-    lateinit var database: FirebaseDatabase
-    lateinit var users: DatabaseReference
+    private lateinit var database: FirebaseDatabase
+    private lateinit var users: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,22 +68,21 @@ class MainActivity : AppCompatActivity() {
         alertDialog.setTitle("Sign Up")
         alertDialog.setMessage("Please full fill info")
 
-        var inflater: LayoutInflater = this.layoutInflater
-        var signUpLayout: View = inflater.inflate(R.layout.sign_up_layout, null)
+        val signUpLayout: SignUpLayoutBinding = SignUpLayoutBinding.inflate(layoutInflater)!!
 
-        alertDialog.setView(signUpLayout)
+        alertDialog.setView(signUpLayout.root)
         alertDialog.setIcon(R.drawable.ic_account_circle_black_24dp)
 
-        alertDialog.setNegativeButton("NO", {
-            dialogInterface, i ->  dialogInterface.dismiss()
-        })
+        alertDialog.setNegativeButton("NO") {
+            dialogInterface, _ ->  dialogInterface.dismiss()
+        }
 
-        alertDialog.setPositiveButton("YES", DialogInterface.OnClickListener {
-            dialogInterface, i ->
+        alertDialog.setPositiveButton("YES") {
+            dialogInterface, _ ->
 
-            val user: User = User(mainBinding.infoLog.edtNewUserName.text.toString(),
-                    mainBinding.infoLog.edtNewPassword.text.toString(),
-                    mainBinding.infoLog.edtNewEmail.text.toString())
+            val user: User = User(signUpLayout.edtNewUserName.text.toString(),
+                    signUpLayout.edtNewPassword.text.toString(),
+                    signUpLayout.edtNewEmail.text.toString())
 
             val userListener = object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             users.addListenerForSingleValueEvent(userListener)
 
             dialogInterface.dismiss()
-        })
+        }
 
         alertDialog.show()
     }

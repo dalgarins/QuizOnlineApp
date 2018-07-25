@@ -7,7 +7,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/background"
         tools:context=".MainActivity">
 
         <RelativeLayout
@@ -29,6 +29,7 @@
                 app:cardElevation="4dp">
 
                 <LinearLayout
+                    android:id="@+id/layout_login"
                     android:padding="16dp"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
