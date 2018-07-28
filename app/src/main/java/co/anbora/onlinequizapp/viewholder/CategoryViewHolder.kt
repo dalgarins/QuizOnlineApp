@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import co.anbora.onlinequizapp.actions.ItemClickListener
 import co.anbora.onlinequizapp.databinding.CategoryLayoutBinding
+import co.anbora.onlinequizapp.domain.model.Category
 
 class CategoryViewHolder: RecyclerView.ViewHolder, View.OnClickListener {
 
@@ -22,5 +23,12 @@ class CategoryViewHolder: RecyclerView.ViewHolder, View.OnClickListener {
 
     override fun onClick(view: View) {
         itemClickListener.onClick(view, adapterPosition, false)
+    }
+
+    fun bind(category: Category) {
+        binding.let {
+            it.category = category
+            it.executePendingBindings()
+        }
     }
 }

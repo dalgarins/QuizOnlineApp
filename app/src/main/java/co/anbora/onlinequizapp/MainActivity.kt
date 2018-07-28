@@ -1,6 +1,7 @@
 package co.anbora.onlinequizapp
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -46,7 +47,9 @@ class MainActivity : AppCompatActivity() {
                         val login: User? = dataSnapshot.child(userName).getValue(User::class.java)
                         login!!.let {
                             if (password == (it.password)) {
-                                Toast.makeText(this@MainActivity, "Login ok!", Toast.LENGTH_SHORT).show()
+                                val homeIntent: Intent =  Intent(this@MainActivity, HomeActivity::class.java)
+                                startActivity(homeIntent)
+                                finish()
                             } else {
                                 Toast.makeText(this@MainActivity, "Wrong password!", Toast.LENGTH_SHORT).show()
                             }
