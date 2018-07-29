@@ -29,7 +29,7 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
             setFragment(selectedFragment)
-             true
+            return@setOnNavigationItemSelectedListener true
         }
 
         setFragment(CategoryFragment.newInstance())

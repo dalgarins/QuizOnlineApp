@@ -1,5 +1,8 @@
 package co.anbora.onlinequizapp
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -25,6 +28,7 @@ class CategoryFragment : Fragment() {
     private lateinit var binding: FragmentCategoryBinding
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var adapter: FirebaseRecyclerAdapter<Category, CategoryViewHolder>
+    private lateinit var gameViewModel: GameViewModel
 
     private lateinit var database: FirebaseDatabase
     private lateinit var categories: DatabaseReference
@@ -47,6 +51,8 @@ class CategoryFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binding = FragmentCategoryBinding.inflate(inflater, container, false)
+
+        gameViewModel = ViewModelProviders.of(requireActivity()).get(GameViewModel::class.java)
 
         layoutManager = LinearLayoutManager(context)
 
@@ -86,9 +92,12 @@ class CategoryFragment : Fragment() {
                 holder.setItemClickListener(object : ItemClickListener {
                     override fun onClick(view: View, position: Int, isLongClick: Boolean) {
 
-                        Toast.makeText(activity,
-                                String.format("%s|%s", adapter.getRef(position).key, model.name),
-                                Toast.LENGTH_SHORT).show()
+                        val intent: Intent = Intent(activity, StartGameActivity::class.java)
+                        val categoryId: String? = adapter.getRef(position).key
+                        if (categoryId != null) {
+                            gameViewModel.setCategoryQuizGame(categoryId)
+                        }
+                        startActivity(intent)
                     }
                 })
             }
