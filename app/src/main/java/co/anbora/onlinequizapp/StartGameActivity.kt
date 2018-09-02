@@ -8,7 +8,7 @@ import android.os.Bundle
 import co.anbora.onlinequizapp.databinding.ActivityStartGameBinding
 import co.anbora.onlinequizapp.domain.model.Question
 import com.google.firebase.database.*
-import java.util.*
+
 
 class StartGameActivity : AppCompatActivity() {
 
@@ -28,13 +28,15 @@ class StartGameActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
 
-        loadQuestions(viewModel.getCategoryQuizGame().value!!)
-
         binding.btnPlay.setOnClickListener {
             val intent: Intent = Intent(this@StartGameActivity, PlayGameActivity::class.java)
             startActivity(intent)
             finish()
         }
+
+        viewModel.getCategoryQuizGame().observe(this, android.arch.lifecycle.Observer {
+            loadQuestions(it!!)
+        })
     }
 
     private fun loadQuestions(categoryId: String) {
@@ -60,7 +62,7 @@ class StartGameActivity : AppCompatActivity() {
                     }
                 })
 
-        //Collections.shuffle(viewModel.getQuestions())
+        viewModel.setQuestions(viewModel.getQuestions().value!!.shuffled())
 
     }
 }

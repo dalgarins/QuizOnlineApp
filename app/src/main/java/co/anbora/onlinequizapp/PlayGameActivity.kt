@@ -1,5 +1,6 @@
 package co.anbora.onlinequizapp
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -42,6 +43,29 @@ class PlayGameActivity : AppCompatActivity(), View.OnClickListener {
 
         database = FirebaseDatabase.getInstance()
         questions = database.getReference("Questions")
+
+        viewModel.getCurrentQuestion().observe(this, Observer {
+            if (it != null) {
+                if (it.isImageQuestion.equals("true")) {
+                    Glide.with(applicationContext)
+                            .load(it.question)
+                            .into(binding.questionImage)
+                    binding.questionImage.visibility = View.VISIBLE
+                    binding.questionText.visibility = View.INVISIBLE
+                } else {
+                    binding.questionText.text = it.question
+
+                    binding.questionImage.visibility = View.INVISIBLE
+                    binding.questionText.visibility = View.VISIBLE
+                }
+
+                binding.btnAnswerA.text = it.answerA
+                binding.btnAnswerB.text = it.answerB
+                binding.btnAnswerC.text = it.answerC
+                binding.btnAnswerD.text = it.answerD
+            }
+        })
+
     }
 
     override fun onClick(view: View) {
@@ -50,7 +74,7 @@ class PlayGameActivity : AppCompatActivity(), View.OnClickListener {
         if (index < totalQuestion) {
             val clickedButton: Button = view as Button
 
-            if (clickedButton.text.equals(viewModel.getQuestions().value?.get(index)?.correctAnswer)) {
+            if (clickedButton.text.equals(viewModel.getCurrentQuestion().value!!.correctAnswer)) {
 
                 score += 10
                 correctAnswer++
@@ -58,58 +82,37 @@ class PlayGameActivity : AppCompatActivity(), View.OnClickListener {
 
             } else {
 
-                val intent: Intent = Intent(this@PlayGameActivity, DoneActivity::class.java)
-                val bundle: Bundle = Bundle()
-                bundle.putInt("SCORE", score)
-                bundle.putInt("TOTAL", totalQuestion)
-                bundle.putInt("CORRECT", correctAnswer)
-                intent.putExtras(bundle)
-                startActivity(intent)
-                finish()
+                toDoneActivity()
             }
         }
     }
 
     private fun showQuestion(index: Int) {
 
+        viewModel.setCurrentQuestion(index)
         if (index < totalQuestion) {
+
             this.thisQuestion++
             binding.questionText.text = String.format("%d / %d", thisQuestion, totalQuestion)
             binding.progressBar.progress = 0
             progressValue = 0
-
-            if (viewModel.getQuestions().value?.get(index)?.isImageQuestion.equals("true")) {
-                Glide.with(applicationContext)
-                        .load(viewModel.getQuestions().value?.get(index)?.question)
-                        .into(binding.questionImage)
-                binding.questionImage.visibility = View.VISIBLE
-                binding.questionText.visibility = View.INVISIBLE
-            } else {
-                binding.questionText.text = viewModel.getQuestions().value?.get(index)?.question
-
-                binding.questionImage.visibility = View.INVISIBLE
-                binding.questionText.visibility = View.VISIBLE
-            }
-
-            binding.btnAnswerA.text = viewModel.getQuestions().value?.get(index)?.answerA
-            binding.btnAnswerB.text = viewModel.getQuestions().value?.get(index)?.answerB
-            binding.btnAnswerC.text = viewModel.getQuestions().value?.get(index)?.answerC
-            binding.btnAnswerD.text = viewModel.getQuestions().value?.get(index)?.answerD
-
             countDown.start()
         } else {
 
-            val intent: Intent = Intent(this@PlayGameActivity, DoneActivity::class.java)
-            val bundle: Bundle = Bundle()
-            bundle.putInt("SCORE", score)
-            bundle.putInt("TOTAL", totalQuestion)
-            bundle.putInt("CORRECT", correctAnswer)
-            intent.putExtras(bundle)
-            startActivity(intent)
-            finish()
-
+            toDoneActivity()
         }
 
+    }
+
+    private fun toDoneActivity() {
+        val intent: Intent = Intent(this@PlayGameActivity, DoneActivity::class.java)
+        val bundle: Bundle = Bundle()
+        bundle.putInt("SCORE", score)
+        bundle.putInt("TOTAL", totalQuestion)
+        bundle.putInt("CORRECT", correctAnswer)
+        intent.putExtras(bundle)
+        startActivity(intent)
+        finish()
     }
 
     override fun onResume() {
