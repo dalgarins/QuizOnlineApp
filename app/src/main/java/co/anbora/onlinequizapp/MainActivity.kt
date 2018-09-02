@@ -1,6 +1,7 @@
 package co.anbora.onlinequizapp
 
 import android.app.AlertDialog
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var users: DatabaseReference
 
+    private lateinit var viewModel: GameViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -33,6 +36,8 @@ class MainActivity : AppCompatActivity() {
             signIn(mainBinding.edtUserName.text.toString(),
                     mainBinding.edtPassword.text.toString())
         }
+
+        viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
     }
 
     private fun signIn(userName: String, password: String) {
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                         login!!.let {
                             if (password == (it.password)) {
                                 val homeIntent: Intent =  Intent(this@MainActivity, HomeActivity::class.java)
+                                viewModel.setCurrentUser(login)
                                 startActivity(homeIntent)
                                 finish()
                             } else {

@@ -5,4 +5,6 @@ data class Question(val question: String = "",
                     val answerB: String = "",
                     val answerC: String = "",
                     val answerD: String = "",
-                    val categoryId: String = "", val isImageQuestion: String = "")
+                    val correctAnswer: String = "",
+                    val categoryId: String = "",
+                    val isImageQuestion: String = "")
